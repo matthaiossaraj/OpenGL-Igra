@@ -1,0 +1,153 @@
+import java.util.ArrayList;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
+
+public class Main extends BaseWindow {
+
+  float posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0, scale = 20;
+  float s_posX = 0, s_posY = 0, s_posZ = 0;
+  String lastPosition;
+  
+  ArrayList<Cube> cubes = new ArrayList();
+ 
+  Ship ship;
+
+	/**
+	 * Initial setup of projection of the scene onto screen, lights etc.
+	 */
+  protected void addCube(String direction, String next) {
+	// front, right, back, left, top, bottom / x, y, z
+	  switch(direction) {
+	  	case "front":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,1,0}));
+	  		break;
+	  	case "right":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,1,0}));
+	  		break;
+	  	case "left":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,1,0}));
+	  		break;
+	  	case "up":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,1,0}));
+	  		break;
+	  	case "down":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,1,0}));
+	  		break;
+	  	case "start":
+	  		cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{0,0,0}));
+	  		lastPosition = "start";
+	  		break;
+	  }
+  }
+  
+  protected void setupView()
+	{    
+    initializeModels();
+    
+    // enable depth buffer (off by default)
+    GL11.glEnable(GL11.GL_DEPTH_TEST); 
+    // enable culling of back sides of polygons
+    //GL11.glEnable(GL11.GL_CULL_FACE);
+
+    // mapping from normalized to window coordinates
+    GL11.glViewport(0, 0, 1024, 768);
+
+    // setup projection matrix stack
+    GL11.glMatrixMode(GL11.GL_PROJECTION);
+    GL11.glLoadIdentity();
+    GLU.gluPerspective(45, 1024 / (float)768, 1.0f, 3000.0f);
+
+    setCameraMatrix();    
+	}
+    
+  protected void setCameraMatrix() {
+	// model view stack 
+	    GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	    GL11.glLoadIdentity();
+	    // setup view space; 
+	    // translate to 0,2,4 and rotate 30 degrees along x 
+	    GL11.glTranslatef(0, 0, 0);
+	    GL11.glRotatef(15.0f, 1.0f, 0.0f, 0.0f);
+  }
+
+  /** 
+   * can be used for 3D model initialization
+   */
+  protected void initializeModels() {
+	  
+	  ship = new Ship();
+  }
+  /**
+   * Resets the view of current frame
+   */
+  protected void resetView()
+  {
+    // clear color and depth buffer
+    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+  }
+  
+  /**
+   * Renders current frame
+   */
+  protected void renderFrame() {
+	  
+	  for(int i=0;i<cubes.size();i++) {
+		  Cube cube = cubes.get(i);
+		  cubes.get(i).setPosition((posX+cube.translation[0]), (posY+cube.translation[1]), (posZ+cube.translation[2]));
+		  cubes.get(i).setRotation(rotX, rotY, rotZ);
+		  cubes.get(i).setScaling(scale, scale, scale);
+		  
+		  cubes.get(i).render3D();
+	  }
+	  
+	  ship.render3D();
+	  super.renderFrame();
+  }
+  
+  /**
+   * Processes Keyboard and Mouse input and spawns actions
+   */  
+  protected void processInput() {
+	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		  /*if((Math.abs(Math.toRadians(rotY)) % Math.PI) != 0) {
+			  if(rotY != 0) {
+				  posZ+=Math.sin(Math.toRadians(rotY))*0.02;
+				  posX+=Math.cos(Math.toRadians(rotY))*0.02;
+				  System.out.println("posZ="+posZ+"  posX="+posX+"    rotY="+rotY);
+			  }
+		  }  
+		  else*/
+			  posZ+=0.02;
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_S))
+	      posZ-=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_A))
+		  posX+=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_D))
+	      posX-=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_F))
+		  posY+=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_R))
+	      posY-=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
+		  rotY-=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
+		  rotY+=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_UP))
+		  rotX+=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+		  rotX-=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_Q))
+		  rotZ+=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_E))
+		  rotZ-=0.1;
+            
+    super.processInput();
+  }
+  
+  public static void main(String[] args) {
+    (new Main()).execute();
+  }  
+}

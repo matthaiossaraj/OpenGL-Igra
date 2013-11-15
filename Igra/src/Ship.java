@@ -1,0 +1,81 @@
+import org.lwjgl.opengl.GL11;
+
+public class Ship {
+	
+	public void render3D() {
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		 GL11.glPushMatrix();
+		
+	    renderModel();
+		 
+		 GL11.glPopMatrix();
+	}
+	  
+	private void renderModel() {
+		GL11.glBegin(GL11.GL_TRIANGLES);
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f( 3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f(-3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f(0.0f,  3.0f, 53.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f( 3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f( 0.0f, -3.0f, 56.0f); 
+	    GL11.glVertex3f(0.0f,  3.0f, 53.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f( 0.0f, -3.0f, 56.0f); 
+	    GL11.glVertex3f(0.0f,  3.0f, 53.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f( 3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f(-3.0f, -3.0f, 50.0f); 
+	    GL11.glVertex3f(0.0f, -3.0f, 56.0f);
+	    GL11.glEnd();
+	    
+	    GL11.glBegin(GL11.GL_TRIANGLES);
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-15.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-21.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-18.0f,  3.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-15.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-18.0f, -3.0f, 156.0f); 
+	    GL11.glVertex3f(-18.0f,  3.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-21.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-18.0f, -3.0f, 156.0f); 
+	    GL11.glVertex3f(-18.0f,  3.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-15.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-21.0f, -3.0f, 150.0f); 
+	    GL11.glVertex3f(-18.0f, -3.0f, 156.0f);
+	    GL11.glEnd();
+	    
+	    GL11.glBegin(GL11.GL_TRIANGLES);
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-130.0f, 31.0f, 150.0f); 
+	    GL11.glVertex3f(-124.0f, 31.0f, 150.0f); 
+	    GL11.glVertex3f(-127.0f, 37.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-130.0f, 31.0f, 150.0f);
+	    GL11.glVertex3f(-127.0f, 31.0f, 156.0f); 
+	    GL11.glVertex3f(-127.0f, 37.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-130.0f, 31.0f, 150.0f); 
+	    GL11.glVertex3f(-127.0f, 31.0f, 156.0f); 
+	    GL11.glVertex3f(-127.0f, 37.0f, 153.0f);
+	    
+	    GL11.glColor3f(0.5f, 0.5f, 0.5f);
+	    GL11.glVertex3f(-130.0f, 31.0f, 150.0f); 
+	    GL11.glVertex3f(-124.0f, 31.0f, 150.0f); 
+	    GL11.glVertex3f(-127.0f, 31.0f, 156.0f);
+	    GL11.glEnd();
+	}
+}
