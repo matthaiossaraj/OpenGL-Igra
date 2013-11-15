@@ -6,10 +6,13 @@ import org.lwjgl.util.glu.GLU;
 
 public class Main extends BaseWindow {
 
-  float posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0, scale = 10;
+  float posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0, scale = 1.5f;
   float s_posX = 0, s_posY = 0, s_posZ = 0;
   
   ArrayList<Cube> cubes  = new ArrayList();
+  
+  float aSpeed = 0.1f;
+  float speed = 0.02f;
  
   Ship ship;
 
@@ -192,13 +195,13 @@ public class Main extends BaseWindow {
 	  super.renderFrame();
   }
   
-  protected float cos(float f) { // cos v stopinjah
+  protected float cos(float f) { // cos in degrees
 	  double f_d = Math.toRadians(f);
 	  float res = (float)Math.cos(f_d);
 	  return res;
   }
   
-  protected float sin(float f) { // sin v stopinjah
+  protected float sin(float f) { // sin in degrees
 	  double f_d = Math.toRadians(f);
 	  float res = (float)Math.sin(f_d);
 	  return res;
@@ -209,49 +212,62 @@ public class Main extends BaseWindow {
    */  
   protected void processInput() {
 	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-		  System.out.println("rotY "+rotY);
-		  if(rotY != 0) {
-			  if(rotY <= 90) {
-				  System.out.println("posZ "+(cos(rotY)*0.02)+"  posX "+(sin(rotY)*0.02));
-				  posZ+=cos(rotY)*0.02;
-				  posX-=sin(rotY)*0.02;
-			  }
-			  else if(rotY >= 90) {
-				  if(rotY<0) {
-					  posZ-=cos((rotY+90))*0.02;
-					  posX+=sin((rotY+90))*0.02;
-				  }
-				  else if(rotY>0) {
-					  posZ-=cos((rotY-90))*0.02;
-					  posX+=sin((rotY-90))*0.02;
-				  }
-			  }
+		  if(rotY != 0 || rotX != 0) {
+			  posY+=sin((rotX%360))*speed;
+			  float point = cos((rotX%360))*speed;
+			  posZ+=cos((rotY%360))*point;
+			  posX-=sin((rotY%360))*point;
 		  }  
 		  else
-			  posZ+=0.02;
+			  posZ+=speed;
 	  }
-	  if (Keyboard.isKeyDown(Keyboard.KEY_S))
-	      posZ-=0.02;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_A))
-		  posX+=0.02;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_D))
-	      posX-=0.02;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_F))
-		  posY+=0.02;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_R))
-	      posY-=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+		  if(rotY != 0 || rotX != 0) {
+			  posY-=sin((rotX%360))*speed;
+			  float point = cos((rotX%360))*speed;
+			  posZ-=cos((rotY%360))*point;
+			  posX+=sin((rotY%360))*point;
+		  }  
+		  else
+			  posZ-=speed;
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		  if(rotY != 0) {
+			  posZ+=sin((rotY%360))*speed;
+			  posX+=cos((rotY%360))*speed;
+		  }  
+		  else
+			  posX+=speed;
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+		  if(rotY != 0) {
+			  posZ-=sin((rotY%360))*speed;
+			  posX-=cos((rotY%360))*speed;
+		  }  
+		  else
+			  posX-=speed;
+	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
 		  rotY-=0.1;
 	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
 		  rotY+=0.1;
 	  if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-		  rotX+=0.1;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
 		  rotX-=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
+		  rotX+=0.1;
 	  if (Keyboard.isKeyDown(Keyboard.KEY_Q))
-		  rotZ+=0.1;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_E))
 		  rotZ-=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_E))
+		  rotZ+=0.1;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_V))
+		  posY+=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_C))
+	      posY-=0.02;
+	  if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+		  rotX = 0;
+		  rotY = 0;
+		  rotZ = 0;
+	  }
             
     super.processInput();
   }
