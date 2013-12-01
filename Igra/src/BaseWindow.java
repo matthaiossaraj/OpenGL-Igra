@@ -3,13 +3,11 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.input.*;
 import java.nio.*;
 
-public class BaseWindow
-{
+public class BaseWindow {
 
-  protected static boolean isRunning = false;
+  protected static boolean isRunning = true;
 
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     // What version of OpenGL is supported?
 
     // Start our program
@@ -17,13 +15,10 @@ public class BaseWindow
   }
 
   // Initializes display and enters main loop
-  protected void execute()
-  {
-    try
-    {
+  protected void execute() {
+    try {
       initDisplay();
-    } catch (LWJGLException e)
-    {
+    } catch (LWJGLException e) {
       System.err.println("Can't open display.");
       System.exit(0);
     }
@@ -34,13 +29,11 @@ public class BaseWindow
   }
 
   // Main loop: renders and processes input events
-  protected void mainLoop()
-  {
+  protected void mainLoop() {
     // setup camera and lights
     setupView();
 
-    while (BaseWindow.isRunning)
-    {
+    while (BaseWindow.isRunning) {
       // reset view
       resetView();
 
@@ -56,46 +49,57 @@ public class BaseWindow
   }
 
   // Initial setup of projection of the scene onto screen, lights, etc.
-  protected void setupView()
-  {
-
+  protected void setupView() {
   }
 
   // Resets the view of current frame
-  protected void resetView()
-  {
-
+  protected void resetView() {
   }
 
   // Renders current frame
-  protected void renderFrame()
-  {
+  protected void renderFrame() {
+  }
+  
+  // Renders Main Menu frame
+  protected void renderFrameMainMenu() {
+  }
+  
+  //Renders Game Over frame
+  protected void renderFrameGameOver() {
   }
 
+  //Renders Level Completed frame
+  protected void renderFrameLevelCompleted() {
+  }
+  
   // Processes Keyboard and Mouse input and spawns actions
-  protected void processInput()
-  {
-    if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE))
-    {
+  protected void processInput() {
+    if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
       BaseWindow.isRunning = false;
     }
+  }
+  
+  // Processes input from Main Menu
+  protected void processInputMainMenu() {
+  }
+  
+  // Processes input from Game Over
+  protected void processInputGameOver() {
+  }
+  
+  // Processes input from Level Completed
+  protected void processInputLevelCompleted() {
   }
 
   // Finds best 1024x768 display mode and sets it
   // @throws LWJGLException
-  protected void initDisplay() throws LWJGLException
-  {
+  protected void initDisplay() throws LWJGLException {
     DisplayMode bestMode = null;
     DisplayMode[] dm = Display.getAvailableDisplayModes();
-    for (int nI = 0; nI < dm.length; nI++)
-    {
+    for (int nI = 0; nI < dm.length; nI++) {
       DisplayMode mode = dm[nI];
-      if (mode.getWidth() == 1024 && mode.getHeight() == 768
-          && mode.getFrequency() <= 85)
-      {
-        if (bestMode == null
-            || (mode.getBitsPerPixel() >= bestMode.getBitsPerPixel() && mode
-                .getFrequency() > bestMode.getFrequency()))
+      if (mode.getWidth() == 1024 && mode.getHeight() == 768 && mode.getFrequency() <= 85) {
+        if (bestMode == null || (mode.getBitsPerPixel() >= bestMode.getBitsPerPixel() && mode.getFrequency() > bestMode.getFrequency()))
           bestMode = mode;
       }
     }
@@ -105,46 +109,41 @@ public class BaseWindow
     Display.create(new PixelFormat(8, 8, 8, 4));
 //    No FSAA
 //    Display.create();
-    Display.setTitle(this.getClass().getName());
+    //Display.setTitle(this.getClass().getName());
+    Display.setTitle(Main.title);
   }
 
   // Utils for creating native buffers
   // @throws LWJGLException
-  public static ByteBuffer allocBytes(int howmany)
-  {
+  public static ByteBuffer allocBytes(int howmany) {
     return ByteBuffer.allocateDirect(howmany).order(ByteOrder.nativeOrder());
   }
 
-  public static IntBuffer allocInts(int howmany)
-  {
+  public static IntBuffer allocInts(int howmany) {
     return ByteBuffer.allocateDirect(howmany).order(ByteOrder.nativeOrder())
     .asIntBuffer();
   }
 
-  public static FloatBuffer allocFloats(int howmany)
-  {
+  public static FloatBuffer allocFloats(int howmany) {
     return ByteBuffer.allocateDirect(howmany).order(ByteOrder.nativeOrder())
     .asFloatBuffer();
   }
 
-  public static ByteBuffer allocBytes(byte[] bytearray)
-  {
+  public static ByteBuffer allocBytes(byte[] bytearray) {
     ByteBuffer bb = ByteBuffer.allocateDirect(bytearray.length * 1).order(
         ByteOrder.nativeOrder());
     bb.put(bytearray).flip();
     return bb;
   }
 
-  public static IntBuffer allocInts(int[] intarray)
-  {
+  public static IntBuffer allocInts(int[] intarray) {
     IntBuffer ib = ByteBuffer.allocateDirect(intarray.length * 4).order(
         ByteOrder.nativeOrder()).asIntBuffer();
     ib.put(intarray).flip();
     return ib;
   }
 
-  public static FloatBuffer allocFloats(float[] floatarray)
-  {
+  public static FloatBuffer allocFloats(float[] floatarray) {
     FloatBuffer fb = ByteBuffer.allocateDirect(floatarray.length * 4).order(
         ByteOrder.nativeOrder()).asFloatBuffer();
     fb.put(floatarray).flip();
