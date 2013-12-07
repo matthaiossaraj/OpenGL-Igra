@@ -31,10 +31,10 @@ public class Main extends BaseWindow {
   
   public static ArrayList<Cube> cubes;
   
-  float NormalSpeed = 0.05f;
-  float FastSpeed   = 0.1f;
+  float NormalSpeed = 0.1f;
+  float FastSpeed   = 0.5f;
   int currentCube = 0;
-  float size=1;
+  float size=2f;
   
   // for all additional objects (Elements=Osebki/Predmeti; for instance "Diamonds")
   Diamond d;
@@ -618,36 +618,28 @@ public class Main extends BaseWindow {
   }
   
   protected boolean collisionRotation(float rY) {
-	  float tail = 1;
-	  float p[] = cubes.get(currentCube).getPosition();
-	  float distZ = Math.abs(Math.abs(posZ+startZ) - Math.abs(p[2]));
-	  if(distZ < 1 && !cubes.get(currentCube).opened(2))
-		  return true;
-	  float distX = Math.abs(Math.abs(posX) - Math.abs(p[0]));
-	  if(distX > 0.43f && !cubes.get(currentCube).opened(1))
-		  return true;
-	  float distY = Math.abs(Math.abs(posY) - Math.abs(p[1]));
-	  if(distY > 0.55f && !cubes.get(currentCube).opened(4))
-		  return true;
-	  return false;
+	  float tail = 0.5f;
+	  float Xchange = cos((rY%360)+270) * tail;
+	  float Zchange = cos((rY%360)+270) * tail;
+	  return collision(Xchange, 0, Zchange);
   }
   
   protected boolean collision(float pX, float pY, float pZ) {
 	  float p[] = cubes.get(currentCube).getPosition();
 	  float distZ = Math.abs(Math.abs(pZ+startZ) - Math.abs(p[2]));
-	  if(pZ > posZ && distZ < 1 && !cubes.get(currentCube).opened(2))
+	  if(pZ > posZ && distZ < 1.5 && !cubes.get(currentCube).opened(2))
 		  return true;
 	  else if(pZ < posZ  && (pZ+startZ) < Math.abs(p[2]) && !cubes.get(currentCube).opened(0))
 		  return true;
 	  float distX = Math.abs(Math.abs(pX) - Math.abs(p[0]));
-	  if(pX < posX && distX > 0.43f && !cubes.get(currentCube).opened(1))
+	  if(pX < posX && distX > 0.9 && !cubes.get(currentCube).opened(1))
 		  return true;
-	  else if(pX > posX  && distX > 0.43f && !cubes.get(currentCube).opened(3))
+	  else if(pX > posX  && distX > 0.9 && !cubes.get(currentCube).opened(3))
 		  return true;
 	  float distY = Math.abs(Math.abs(pY) - Math.abs(p[1]));
-	  if(pY < posY && distY > 0.55f && !cubes.get(currentCube).opened(4))
+	  if(pY < posY && distY > 0.9 && !cubes.get(currentCube).opened(4))
 		  return true;
-	  else if(pY > posY  && distY > 0.55f && !cubes.get(currentCube).opened(5))
+	  else if(pY > posY  && distY > 0.9 && !cubes.get(currentCube).opened(5))
 		  return true;
 	  return false;
   }
@@ -665,8 +657,7 @@ public class Main extends BaseWindow {
 	  	  
 	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 		  getCurrentCube();
-		  if(rotY != 0 || rotX != 0) {
-			  pY=sin((rotX%360))*NormalSpeed;
+		  if(rotY != 0) {
 			  float point = cos((rotX%360))*NormalSpeed;
 			  pZ=cos((rotY%360))*point;
 			  pX=sin((rotY%360))*point;
@@ -674,7 +665,7 @@ public class Main extends BaseWindow {
 		  else
 			  //posZ+=NormalSpeed;
 			  pZ=NormalSpeed;
-		  if(!collision(posX - pX, posY + pY, posZ + pZ)) {
+		  if(!collision(posX - pX, posY, posZ + pZ)) {
 			  posY+=pY;
 			  posZ+=pZ;
 			  posX-=pX;
@@ -686,19 +677,19 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+(posX-pX)+"  "+(posY+pY)+"  "+(posZ+pZ));
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 		  getCurrentCube();
-		  if(rotY != 0 || rotX != 0) {
-			  pY=sin((rotX%360))*NormalSpeed;
+		  if(rotY != 0) {
 			  float point = cos((rotX%360))*NormalSpeed;
 			  pZ=cos((rotY%360))*point;
 			  pX=sin((rotY%360))*point;
 		  }  
 		  else
 			  pZ=NormalSpeed;
-		  if(!collision(posX + pX, posY - pY, posZ - pZ)) {
+		  if(!collision(posX + pX, posY, posZ - pZ)) {
 			  posY-=pY;
 			  posZ-=pZ;
 			  posX+=pX;
@@ -710,6 +701,7 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+(posX+pX)+"  "+(posY-pY)+"  "+(posZ-pZ));
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
@@ -731,6 +723,7 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+(posX+pX)+"  "+posY+"  "+(posZ+pZ));
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
@@ -752,6 +745,7 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+(posX-pX)+"  "+posY+"  "+(posZ-pZ));
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
@@ -759,7 +753,15 @@ public class Main extends BaseWindow {
 		  if(!collisionRotation(rotY-rY)) {
 			  rotY-=rY;
 		  }
-		  
+
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
+		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
 		  rY=FastSpeed*4;
@@ -767,6 +769,14 @@ public class Main extends BaseWindow {
 			  rotY+=rY;
 		  }
 		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
+		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 		  pY=NormalSpeed;
@@ -780,6 +790,7 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+posX+"  "+(posY-pY)+"  "+posZ);
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
@@ -794,6 +805,7 @@ public class Main extends BaseWindow {
 		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
 		  System.out.println("new: "+posX+"  "+(posY+pY)+"  "+posZ);
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
 	  }
 	  if (Display.isCloseRequested()) {

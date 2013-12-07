@@ -5,7 +5,7 @@ public class World {
 	
 	private float s_posX = 0, s_posY = 0, s_posZ = 0;
 	public static ArrayList<Cube> cubes = new ArrayList();
-	float size = 1;
+	float size = 2f;
 	
 	public World() {
 		addCube("start","front");

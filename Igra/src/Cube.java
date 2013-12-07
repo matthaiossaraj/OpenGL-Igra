@@ -4,7 +4,7 @@ public class Cube extends Model3D {
 	
 	int[] sides; // front, right, back, left, top, bottom
 	float[] translation;
-	float size = 1;
+	float size = 2f;
 	
 	public Cube(int[] sides, float[] translation) {
 		this.sides = sides;
