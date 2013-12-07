@@ -21,18 +21,20 @@ public class Main extends BaseWindow {
   public static int gameplay = 1;
   int health = 100;
   public static Timer timer;
-  static int definedPlayTime = 30;
+  static int definedPlayTime = 10000;
   public static int playTime = definedPlayTime, healthTime = 10, firstTime = 1000, period = 1000;
   public static int totalTime = playTime+healthTime; 
 
-  float posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0, scale = 1.5f;
+  float posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0, scale = 1f;
   float s_posX = 0, s_posY = 0, s_posZ = 0;
   boolean flag_wireframe = false, flag_lights = true, flag_fog = true;
   
-  public static ArrayList<Cube> cubes  = new ArrayList();
+  public static ArrayList<Cube> cubes;
   
-  float NormalSpeed = 0.01f;
-  float FastSpeed   = 0.08f;
+  float NormalSpeed = 0.05f;
+  float FastSpeed   = 0.1f;
+  int currentCube = 0;
+  float size=1;
   
   // for all additional objects (Elements=Osebki/Predmeti; for instance "Diamonds")
   Diamond d;
@@ -42,108 +44,10 @@ public class Main extends BaseWindow {
   String action = "", display = "";
   int occurrenceTime = 0;
   int currentdiamond = -1;
+  float startZ = -1.9f;
   
   Ship ship;
-
-  // Initial setup of projection of the scene onto screen, lights etc.
-  protected void addCube(String direction, String next) {
-	  // front, right, back, left, top, bottom / x, y, z
-	  if(direction=="front") {
-		  s_posZ-=2;
-		  if(next=="front")
-			  cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="right")
-			  cubes.add(new Cube(new int[]{0,0,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="left")
-			  cubes.add(new Cube(new int[]{0,1,1,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="up")
-			  cubes.add(new Cube(new int[]{0,1,1,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="down")
-			  cubes.add(new Cube(new int[]{0,1,1,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-	  }
-  	  if(direction=="back") {
-  		  s_posZ+=2;
-  		  if(next=="back")
-  			  cubes.add(new Cube(new int[]{0,1,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="right")
-  			  cubes.add(new Cube(new int[]{1,0,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="left")
-  			  cubes.add(new Cube(new int[]{1,1,0,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="up")
-  			  cubes.add(new Cube(new int[]{1,1,0,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="down")
-  			  cubes.add(new Cube(new int[]{1,1,0,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-  	  }
-  	  if(direction=="right") {
-  		  s_posX+=2;
-  		  if(next=="front")
-  			  cubes.add(new Cube(new int[]{1,1,0,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="back")
-  			  cubes.add(new Cube(new int[]{0,1,1,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="right")
-  			  cubes.add(new Cube(new int[]{1,0,1,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="up")
-  			  cubes.add(new Cube(new int[]{1,1,1,0,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-  		  else if(next=="down")
-  			  cubes.add(new Cube(new int[]{1,1,1,0,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-	  }
-	  if(direction=="left") {
-		  s_posX-=2;
-		  if(next=="front")
-			  cubes.add(new Cube(new int[]{1,0,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="back")
-			  cubes.add(new Cube(new int[]{0,0,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="left")
-		  	  cubes.add(new Cube(new int[]{1,0,1,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="up")
-		  	  cubes.add(new Cube(new int[]{1,0,1,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="down")
-		  	  cubes.add(new Cube(new int[]{1,0,1,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-	  }
-	  if(direction=="up") {
-		  s_posY+=2;
-		  if(next=="front")
-			  cubes.add(new Cube(new int[]{1,1,0,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="back")
-			  cubes.add(new Cube(new int[]{0,1,1,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="right")
-			  cubes.add(new Cube(new int[]{1,0,1,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="left")
-			  cubes.add(new Cube(new int[]{1,1,1,0,1,0}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="up")
-			  cubes.add(new Cube(new int[]{1,1,1,1,0,0}, new float[]{s_posX,s_posY,s_posZ}));
-	  }
-	  if(direction=="down") {
-		  s_posY-=2;
-		  if(next=="front")
-			  cubes.add(new Cube(new int[]{1,1,0,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="back")
-			  cubes.add(new Cube(new int[]{0,1,1,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="right")
-			  cubes.add(new Cube(new int[]{1,0,1,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="left")
-			  cubes.add(new Cube(new int[]{1,1,1,0,0,1}, new float[]{s_posX,s_posY,s_posZ}));
-		  else if(next=="down")
-			  cubes.add(new Cube(new int[]{1,1,1,1,0,0}, new float[]{s_posX,s_posY,s_posZ}));
-	  }
-	  if(direction=="secret") {
-		  if (next=="left") {
-			  s_posX-=2;
-			  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-			  s_posX+=2;
-		  } else if (next=="right") {
-			  s_posX+=2;
-			  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-			  s_posX-=2;
-		  } else if (next=="front") {
-			  s_posZ-=2;
-			  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-			  s_posZ+=2;
-		  }
-	  }
-	  if(direction=="start")
-		  cubes.add(new Cube(new int[]{1,1,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-  }
+  World world = new World();
   
   protected void setupView() {
 	  super.setupView();
@@ -198,9 +102,9 @@ public class Main extends BaseWindow {
 	  // setup projection matrix stack
 	  GL11.glMatrixMode(GL11.GL_PROJECTION);
 	  GL11.glLoadIdentity();
-	  GLU.gluPerspective(45, 1024 / (float)768, 1.0f, 75.0f);
+	  GLU.gluPerspective(45, 1024 / (float)768, 1.0f, 500.0f);
 
-	  setCameraMatrix_2();    
+	  setCameraMatrix();    
 	}
     
   protected void setCameraMatrix() { //Setting camera - like in "1.person"
@@ -209,17 +113,7 @@ public class Main extends BaseWindow {
 	  GL11.glLoadIdentity();
 	  // setup view space;
 	  // translate to 0,2,4 and rotate 30 degrees along x
-	  GL11.glTranslatef(0, 0, 0.1f);
-//	  GL11.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
-  }
-  
-  protected void setCameraMatrix_2() { //Setting camera - like in "3.person"
-	  // model view stack
-	  GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	  GL11.glLoadIdentity();
-	  // setup view space;
-	  // translate to 0,2,4 and rotate 30 degrees along x
-	  GL11.glTranslatef(0, 0, -0.2f);
+	  GL11.glTranslatef(0, 0, startZ);
 //	  GL11.glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
   }
 
@@ -231,9 +125,8 @@ public class Main extends BaseWindow {
 	  healthTime = 10;
 	  totalTime = playTime+healthTime;
 	  posX = 0; posY = 0; posZ = 0;
-	  rotX = 0; rotY = 0; rotZ = 0; scale = 1.5f;
+	  rotX = 0; rotY = 0; rotZ = 0; scale = 1f;
 	  s_posX = 0; s_posY = 0; s_posZ = 0;
-	  cubes.clear();
 	  diamonds.clear();
 	  vs.clear();
 	  NormalSpeed = 0.01f;
@@ -243,38 +136,9 @@ public class Main extends BaseWindow {
 	  occurrenceTime = 0;
 	  currentdiamond = -1;
 	  
-	  m_Textures= Texture.loadTextures2D(new String[] { "ceiling.jpg", "checker2.jpg", "floor.png", "wall.jpg" });
+	  cubes = world.getCubes();
 	  
-	  addCube("start","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","right");
-	  addCube("secret","left"); // SECRET chamber with SPEED diamond
-	  addCube("right","right");
-	  addCube("right","right");
-	  addCube("right","right");
-	  addCube("right","right");
-	  addCube("right","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","up");
-	  addCube("secret","front"); // SECRET chamber with TIME diamond 
-	  addCube("up","up");	  
-	  addCube("up","left");
-	  addCube("left","left");
-	  addCube("left","left");
-	  addCube("left","left");
-	  addCube("left","left");
-	  addCube("left","left");
-	  addCube("left","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
-	  addCube("front","front");
+	  m_Textures= Texture.loadTextures2D(new String[] { "ceiling.jpg", "checker2.jpg", "floor.png", "wall.jpg" });
 	  
 	  // BAD DIAMOND (takes 30% health)
 	  v = new float[] {0.0f, 0.0f, -6.0f};
@@ -318,7 +182,7 @@ public class Main extends BaseWindow {
 	  d.setAlpha(1.0f); //set transparency
 	  diamonds.add(d);
 	  
-	  ship = new Ship();
+	  //ship = new Ship();
   }
   
   // Resets the view of current frame
@@ -357,7 +221,7 @@ public class Main extends BaseWindow {
 		  d.render3D();
 	  }
 	  
-	  ship.render3D();
+	  //ship.render3D();
 	  
 	  // HUD & Text render
 	  startHUD();
@@ -540,79 +404,7 @@ public class Main extends BaseWindow {
 	  GL11.glEnable(GL11.GL_LIGHTING);
   }
   
-  // Processes Keyboard and Mouse input and spawns actions
-  protected void processInput() {
-//	  System.out.println("posX="+posX+", posY="+posY+", posZ="+posZ+"; rotX="+rotX+", rotY="+rotY+", rotZ="+rotZ+", speed="+speed+", scale="+scale+"!");
-	  
-	  // check 'our' location and potential collision with the objects/diamonds
-	  // This routine SHOULD BE EXTENDED with the Collision Detection with the cubes
-	  checkLocationAndCollision();
-	  
-	  if (Keyboard.isKeyDown(Keyboard.KEY_1)) setCameraMatrix();
-	  if (Keyboard.isKeyDown(Keyboard.KEY_2)) setCameraMatrix_2();
-	  	  
-	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-		  if(rotY != 0 || rotX != 0) {
-			  posY+=sin((rotX%360))*NormalSpeed;
-			  float point = cos((rotX%360))*NormalSpeed;
-			  posZ+=cos((rotY%360))*point;
-			  posX-=sin((rotY%360))*point;
-		  }  
-		  else
-			  posZ+=NormalSpeed;
-	  }
-	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-		  if(rotY != 0 || rotX != 0) {
-			  posY-=sin((rotX%360))*NormalSpeed;
-			  float point = cos((rotX%360))*NormalSpeed;
-			  posZ-=cos((rotY%360))*point;
-			  posX+=sin((rotY%360))*point;
-		  }  
-		  else
-			  posZ-=NormalSpeed;
-	  }
-	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-		  if(rotY != 0) {
-			  posZ+=sin((rotY%360))*NormalSpeed;
-			  posX+=cos((rotY%360))*NormalSpeed;
-		  }  
-		  else
-			  posX+=NormalSpeed;
-	  }
-	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-		  if(rotY != 0) {
-			  posZ-=sin((rotY%360))*NormalSpeed;
-			  posX-=cos((rotY%360))*NormalSpeed;
-		  }  
-		  else
-			  posX-=NormalSpeed;
-	  }
-	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-		  rotY-=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-		  rotY+=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-		  rotX-=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-		  rotX+=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_Q))
-		  rotZ-=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_E))
-		  rotZ+=FastSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_V))
-		  posY+=NormalSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_C))
-	      posY-=NormalSpeed;
-	  if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
-		  rotX = 0;
-		  rotY = 0;
-		  rotZ = 0;
-	  }
-	  if (Display.isCloseRequested()) {
-	      BaseWindow.isRunning = false;
-	  }
-      super.processInput();
-  }
+ 
   
   protected void processInputMainMenu(){
 	  if(Mouse.getY()>280 && Mouse.getY()<305 && Mouse.getX()>385 && Mouse.getX()<670) {
@@ -638,7 +430,7 @@ public class Main extends BaseWindow {
 		  if(Mouse.isButtonDown(0)){
 			  Mouse.setCursorPosition(-1, -1);
 			  Display.update();
-			  gameplay = 1;
+			  gameplay = 0;
 		  }
 	  }
 	  if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
@@ -652,7 +444,7 @@ public class Main extends BaseWindow {
 		  if(Mouse.isButtonDown(0)){
 			  Mouse.setCursorPosition(-1, -1);
 			  Display.update();
-			  gameplay = 1;
+			  gameplay = 0;
 		  }
 	  }
 	  if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
@@ -802,5 +594,211 @@ public class Main extends BaseWindow {
 		  }
 		  Display.update();
 	  }
+  }
+  
+  protected int getCurrentCube() {
+	  boolean[] detect = {false, false, false};
+	  for(int i=0;i<cubes.size();i++) {
+		  float p[] = cubes.get(i).getPosition();
+		  
+		  if((p[0] + posX) <= 0 && Math.abs(p[0] + posX) <= 1*size)
+			  detect[0] = true;
+		  if((posY+p[1]) <= 0.6*size)
+			  detect[1] = true;
+		  if((posZ + p[2]) >= 0 && (posZ + p[2]) <= 2*size) {
+			  detect[2] = true;
+		  }
+		  if(detect[0] && detect[1] && detect[2])
+			  currentCube = i ;
+		  detect[0] = false;
+		  detect[1] = false;
+		  detect[2] = false;
+	  }
+	  return currentCube;
+  }
+  
+  protected boolean collisionRotation(float rY) {
+	  float tail = 1;
+	  float p[] = cubes.get(currentCube).getPosition();
+	  float distZ = Math.abs(Math.abs(posZ+startZ) - Math.abs(p[2]));
+	  if(distZ < 1 && !cubes.get(currentCube).opened(2))
+		  return true;
+	  float distX = Math.abs(Math.abs(posX) - Math.abs(p[0]));
+	  if(distX > 0.43f && !cubes.get(currentCube).opened(1))
+		  return true;
+	  float distY = Math.abs(Math.abs(posY) - Math.abs(p[1]));
+	  if(distY > 0.55f && !cubes.get(currentCube).opened(4))
+		  return true;
+	  return false;
+  }
+  
+  protected boolean collision(float pX, float pY, float pZ) {
+	  float p[] = cubes.get(currentCube).getPosition();
+	  float distZ = Math.abs(Math.abs(pZ+startZ) - Math.abs(p[2]));
+	  if(pZ > posZ && distZ < 1 && !cubes.get(currentCube).opened(2))
+		  return true;
+	  else if(pZ < posZ  && (pZ+startZ) < Math.abs(p[2]) && !cubes.get(currentCube).opened(0))
+		  return true;
+	  float distX = Math.abs(Math.abs(pX) - Math.abs(p[0]));
+	  if(pX < posX && distX > 0.43f && !cubes.get(currentCube).opened(1))
+		  return true;
+	  else if(pX > posX  && distX > 0.43f && !cubes.get(currentCube).opened(3))
+		  return true;
+	  float distY = Math.abs(Math.abs(pY) - Math.abs(p[1]));
+	  if(pY < posY && distY > 0.55f && !cubes.get(currentCube).opened(4))
+		  return true;
+	  else if(pY > posY  && distY > 0.55f && !cubes.get(currentCube).opened(5))
+		  return true;
+	  return false;
+  }
+  
+  // Processes Keyboard and Mouse input and spawns actions
+  protected void processInput() {
+//	  System.out.println("posX="+posX+", posY="+posY+", posZ="+posZ+"; rotX="+rotX+", rotY="+rotY+", rotZ="+rotZ+", speed="+speed+", scale="+scale+"!");
+	  
+	  // check 'our' location and potential collision with the objects/diamonds
+	  // This routine SHOULD BE EXTENDED with the Collision Detection with the cubes
+	  checkLocationAndCollision();
+	  float  pX = 0, pY = 0, pZ = 0, rY = 0;
+	  
+	  if (Keyboard.isKeyDown(Keyboard.KEY_1)) setCameraMatrix();
+	  	  
+	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		  getCurrentCube();
+		  if(rotY != 0 || rotX != 0) {
+			  pY=sin((rotX%360))*NormalSpeed;
+			  float point = cos((rotX%360))*NormalSpeed;
+			  pZ=cos((rotY%360))*point;
+			  pX=sin((rotY%360))*point;
+		  }  
+		  else
+			  //posZ+=NormalSpeed;
+			  pZ=NormalSpeed;
+		  if(!collision(posX - pX, posY + pY, posZ + pZ)) {
+			  posY+=pY;
+			  posZ+=pZ;
+			  posX-=pX;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+(posX-pX)+"  "+(posY+pY)+"  "+(posZ+pZ));
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+		  getCurrentCube();
+		  if(rotY != 0 || rotX != 0) {
+			  pY=sin((rotX%360))*NormalSpeed;
+			  float point = cos((rotX%360))*NormalSpeed;
+			  pZ=cos((rotY%360))*point;
+			  pX=sin((rotY%360))*point;
+		  }  
+		  else
+			  pZ=NormalSpeed;
+		  if(!collision(posX + pX, posY - pY, posZ - pZ)) {
+			  posY-=pY;
+			  posZ-=pZ;
+			  posX+=pX;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+(posX+pX)+"  "+(posY-pY)+"  "+(posZ-pZ));
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		  getCurrentCube();
+		  if(rotY != 0) {
+			  pZ=sin((rotY%360))*NormalSpeed;
+			  pX=cos((rotY%360))*NormalSpeed;
+		  }  
+		  else
+			  pX+=NormalSpeed;
+		  if(!collision(posX + pX, posY, posZ + pZ)) {
+			  posZ+=pZ;
+			  posX+=pX;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+(posX+pX)+"  "+posY+"  "+(posZ+pZ));
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+		  getCurrentCube();
+		  if(rotY != 0) {
+			  pZ=sin((rotY%360))*NormalSpeed;
+			  pX=cos((rotY%360))*NormalSpeed;
+		  }  
+		  else
+			  pX=NormalSpeed;
+		  if(!collision(posX - pX, posY, posZ - pZ)) {
+			  posZ-=pZ;
+			  posX-=pX;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+(posX-pX)+"  "+posY+"  "+(posZ-pZ));
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+		  rY=FastSpeed*4;
+		  if(!collisionRotation(rotY-rY)) {
+			  rotY-=rY;
+		  }
+		  
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+		  rY=FastSpeed*4;
+		  if(!collisionRotation(rotY+rY)) {
+			  rotY+=rY;
+		  }
+		  
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+		  pY=NormalSpeed;
+		  if(!collision(posX, posY-pY, posZ)) {
+			  posY-=pY;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+posX+"  "+(posY-pY)+"  "+posZ);
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+		  pY=NormalSpeed;
+		  if(!collision(posX, posY+pY, posZ)) {
+			  posY+=pY;
+		  }
+		  
+		  int c = getCurrentCube();
+		  float s[] = cubes.get(c).getPosition();
+		  System.out.println("-------------------------");
+		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
+		  System.out.println("new: "+posX+"  "+(posY+pY)+"  "+posZ);
+		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
+		  System.out.println("cube: "+c);
+	  }
+	  if (Display.isCloseRequested()) {
+	      BaseWindow.isRunning = false;
+	  }
+      super.processInput();
   }
 }

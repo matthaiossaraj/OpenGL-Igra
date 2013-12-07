@@ -53,7 +53,7 @@ public class BitmapText
         return new int[] {0, 1};
       case 'c':
         return new int[] {0, 2};
-      case 'è':
+      case 'Ä':
         return new int[] {0, 3};
       case 'd':
         return new int[] {0, 4};
@@ -87,7 +87,7 @@ public class BitmapText
         return new int[] {1, 3};
       case 's':
         return new int[] {1, 4};
-      case 'š':
+      case 'Å¡':
         return new int[] {1, 5};
       case 't':
         return new int[] {1, 6};
@@ -103,7 +103,7 @@ public class BitmapText
         return new int[] {1, 11};
       case 'z':
         return new int[] {1, 12};
-      case '':
+      case 'Å¾':
         return new int[] {1, 13};
       case 'A':
         return new int[] {2, 0};
@@ -111,7 +111,7 @@ public class BitmapText
         return new int[] {2, 1};
       case 'C':
         return new int[] {2, 2};
-      case 'È':
+      case 'ÄŒ':
         return new int[] {2, 3};
       case 'D':
         return new int[] {2, 4};
@@ -145,7 +145,7 @@ public class BitmapText
         return new int[] {3, 3};
       case 'S':
         return new int[] {3, 4};
-      case 'Š':
+      case 'Å ':
         return new int[] {3, 5};
       case 'T':
         return new int[] {3, 6};
@@ -161,7 +161,7 @@ public class BitmapText
         return new int[] {3, 11};
       case 'Z':
         return new int[] {3, 12};
-      case '':
+      case 'Å½':
         return new int[] {3, 13};
       case '0':
         return new int[] {4, 0};
