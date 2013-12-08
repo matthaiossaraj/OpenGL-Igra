@@ -12,7 +12,25 @@ public class Cube extends Model3D {
 	}
 	
 	public float[] getPosition() {
-		return translation;
+		return this.translation;
+	}
+	
+	public float[][] getBounds() {
+		float bounds[][] = new float[2][3];
+		
+		// x
+		bounds[0][0] = -this.translation[0] + size;
+		bounds[1][0] = -this.translation[0] - size;
+		
+		// y
+		bounds[0][1] = -this.translation[1] + size;
+		bounds[1][1] = -this.translation[1] - size;
+				
+		// z
+		bounds[0][2] = -this.translation[2];
+		bounds[1][2] = -this.translation[2] + 2*size;
+		
+		return bounds;
 	}
 	
 	public boolean opened(int i) {

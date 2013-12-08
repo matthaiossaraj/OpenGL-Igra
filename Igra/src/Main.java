@@ -8,6 +8,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import java.util.Arrays;
 
 import java.nio.IntBuffer;
 
@@ -31,10 +32,11 @@ public class Main extends BaseWindow {
   
   public static ArrayList<Cube> cubes;
   
-  float NormalSpeed = 0.1f;
-  float FastSpeed   = 0.5f;
+  float NormalSpeed = 0.02f;
+  float FastSpeed   = 0.3f;
   int currentCube = 0;
   float size=2f;
+  boolean debug = true;
   
   // for all additional objects (Elements=Osebki/Predmeti; for instance "Diamonds")
   Diamond d;
@@ -44,7 +46,7 @@ public class Main extends BaseWindow {
   String action = "", display = "";
   int occurrenceTime = 0;
   int currentdiamond = -1;
-  float startZ = -1.9f;
+  float startZ = -2.6f;
   
   Ship ship;
   World world = new World();
@@ -93,7 +95,7 @@ public class Main extends BaseWindow {
 	      GL11.glEnable(GL11.GL_FOG);
 	      GL11.glFog(GL11.GL_FOG_COLOR,allocFloats(new float[] { 0.5f,0.5f,0.5f,0.0f }));
 	      GL11.glFogi(GL11.GL_FOG_MODE,GL11.GL_EXP);
-	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.01f);
+	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.05f);
 	  }
  
 	  // mapping from normalized to window coordinates
@@ -129,8 +131,6 @@ public class Main extends BaseWindow {
 	  s_posX = 0; s_posY = 0; s_posZ = 0;
 	  diamonds.clear();
 	  vs.clear();
-	  NormalSpeed = 0.01f;
-	  FastSpeed = 0.08f;
 	  action = "";
 	  display = "";
 	  occurrenceTime = 0;
@@ -138,7 +138,7 @@ public class Main extends BaseWindow {
 	  
 	  cubes = world.getCubes();
 	  
-	  m_Textures= Texture.loadTextures2D(new String[] { "ceiling.jpg", "checker2.jpg", "floor.png", "wall.jpg" });
+	  m_Textures= Texture.loadTextures2D(new String[] { "ceiling.jpg", "checker2.jpg", "floor.png", "wall.jpg", "ship.png" });
 	  
 	  // BAD DIAMOND (takes 30% health)
 	  v = new float[] {0.0f, 0.0f, -6.0f};
@@ -182,7 +182,7 @@ public class Main extends BaseWindow {
 	  d.setAlpha(1.0f); //set transparency
 	  diamonds.add(d);
 	  
-	  //ship = new Ship();
+	  ship = new Ship();
   }
   
   // Resets the view of current frame
@@ -221,7 +221,9 @@ public class Main extends BaseWindow {
 		  d.render3D();
 	  }
 	  
-	  //ship.render3D();
+	  ship.setPosition(0, 0, 0);
+	  ship.setRotation(0, 0, 0);
+	  ship.render3D();
 	  
 	  // HUD & Text render
 	  startHUD();
@@ -283,6 +285,7 @@ public class Main extends BaseWindow {
 
 	  GL11.glDisable(GL11.GL_BLEND);
 	  endHUD();
+	  
 	  super.renderFrame();
   }
   
@@ -599,15 +602,20 @@ public class Main extends BaseWindow {
   protected int getCurrentCube() {
 	  boolean[] detect = {false, false, false};
 	  for(int i=0;i<cubes.size();i++) {
-		  float p[] = cubes.get(i).getPosition();
+		  float b[][] = cubes.get(i).getBounds();
 		  
-		  if((p[0] + posX) <= 0 && Math.abs(p[0] + posX) <= 1*size)
+		  //System.out.println(i+" -------------------------");
+		  //System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  if(b[0][0] > posX && posX > b[1][0])
 			  detect[0] = true;
-		  if((posY+p[1]) <= 0.6*size)
+		  //System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  if(b[0][1] > posY && posY > b[1][1])
 			  detect[1] = true;
-		  if((posZ + p[2]) >= 0 && (posZ + p[2]) <= 2*size) {
+		  //System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  if(b[0][2] < posZ-startZ && posZ-startZ < b[1][2])
 			  detect[2] = true;
-		  }
+		  //System.out.println("detect: "+detect[0]+"  "+detect[1]+"  "+detect[2]);
+		  
 		  if(detect[0] && detect[1] && detect[2])
 			  currentCube = i ;
 		  detect[0] = false;
@@ -616,31 +624,129 @@ public class Main extends BaseWindow {
 	  }
 	  return currentCube;
   }
-  
   protected boolean collisionRotation(float rY) {
-	  float tail = 0.5f;
-	  float Xchange = cos((rY%360)+270) * tail;
-	  float Zchange = cos((rY%360)+270) * tail;
-	  return collision(Xchange, 0, Zchange);
+/*float b[][] = cubes.get(currentCube).getBounds();
+	  
+	  float m = 0.5f+2f*cos(rY);
+	  float m2 = 0.7f;
+	  float m3 = 0.5f;
+	  if(pZ > posZ && b[1][2] < pZ+m && !cubes.get(currentCube).opened(2)) // naprej
+		  return true;
+	  else if(pZ < posZ  && b[0][2] > pZ-m && !cubes.get(currentCube).opened(0)) // nazaj
+		  return true;
+	  if(pX < posX && b[1][0] > pX-m2 && !cubes.get(currentCube).opened(1)) // desno
+		  return true;
+	  else if(pX > posX  && b[0][0] < pX+m2 && !cubes.get(currentCube).opened(3)) // levo 
+		  return true;
+	  if(pY < posY && b[1][1] > pY-m3 && !cubes.get(currentCube).opened(4)) // gor
+		  return true;
+	  else if(pY > posY  && b[0][1] < pY+m3 && !cubes.get(currentCube).opened(5)) // dol
+		  return true;*/
+	  //float b[][] = cubes.get(currentCube).getBounds();
+		//bl br tr tl
+		  /*float xdist = 1.1f;
+		  float zdist = 0.5f;
+		  float[][] cQuad = {{posX-xdist/2,posZ}, {posX+xdist/2,posZ}, {posX+xdist,posZ+zdist}, {posX-xdist,posZ+zdist}};
+		  for(int i=0;i<cQuad.length;i++) {
+			  cQuad[i][0] = cQuad[i][0] * cos(-rY) - cQuad[i][1] * sin(-rY);
+			  cQuad[i][1] = cQuad[i][0] * sin(-rY) + cQuad[i][1] * cos(-rY);
+		  }
+		  System.out.println(Arrays.deepToString(cQuad)+", x: "+posX+", z: "+posZ+",r "+rY+", c: "+currentCube);
+		  
+		  boolean res[] ={false, false, false, false};
+		  System.out.println("------------------------------------");
+		  for(int i=0;i<cQuad.length;i++) {
+			  // naprej
+			  if(cQuad[i][1] > b[1][2] && !cubes.get(currentCube).opened(2))
+				  res[0] = true;
+			  // nazaj
+			  if(cQuad[i][1] < b[0][2] && !cubes.get(currentCube).opened(0))
+				  res[1] = true;
+			  // desno
+			  if(cQuad[i][0] < b[1][0] && !cubes.get(currentCube).opened(1))
+				  res[2] = true;
+			  // levo
+			  if(cQuad[i][0] > b[0][0] && !cubes.get(currentCube).opened(3)) 
+				  res[3] = true;
+			  System.out.println(i+" "+res[0]+" "+res[1]+" "+res[2]+" "+res[3]);
+			  res[0] = false;
+			  res[1] = false;
+			  res[2] = false;
+			  res[3] = false;
+		  }*/
+		  /*for(int i=0;i<cQuad.length;i++) {
+			  if(cQuad[i][1] > b[1][2] && !cubes.get(currentCube).opened(2)) // naprej
+				  return true;
+			  if(cQuad[i][1] < b[0][2] && !cubes.get(currentCube).opened(0)) // nazaj
+				  return true;
+			  if(cQuad[i][0] < b[1][0] && !cubes.get(currentCube).opened(1)) // desno
+				  return true;
+			  if(cQuad[i][0] > b[0][0] && !cubes.get(currentCube).opened(3)) // levo 
+				  return true;
+		  }*/
+	  return false;
   }
   
-  protected boolean collision(float pX, float pY, float pZ) {
-	  float p[] = cubes.get(currentCube).getPosition();
-	  float distZ = Math.abs(Math.abs(pZ+startZ) - Math.abs(p[2]));
-	  if(pZ > posZ && distZ < 1.5 && !cubes.get(currentCube).opened(2))
+  protected boolean collision(float pX, float pY, float pZ, float rY) {
+	  float b[][] = cubes.get(currentCube).getBounds();
+	  
+	  float m = 0.5f;
+	  float m2 = 0.7f;
+	  float m3 = 0.5f;
+	  if(pZ > posZ && b[1][2] < pZ+m && !cubes.get(currentCube).opened(2)) // naprej
 		  return true;
-	  else if(pZ < posZ  && (pZ+startZ) < Math.abs(p[2]) && !cubes.get(currentCube).opened(0))
+	  else if(pZ < posZ  && b[0][2] > pZ+m && !cubes.get(currentCube).opened(0)) // nazaj
 		  return true;
-	  float distX = Math.abs(Math.abs(pX) - Math.abs(p[0]));
-	  if(pX < posX && distX > 0.9 && !cubes.get(currentCube).opened(1))
+	  if(pX < posX && b[1][0] > pX-m2 && !cubes.get(currentCube).opened(1)) // desno
 		  return true;
-	  else if(pX > posX  && distX > 0.9 && !cubes.get(currentCube).opened(3))
+	  else if(pX > posX  && b[0][0] < pX+m2 && !cubes.get(currentCube).opened(3)) // levo 
 		  return true;
-	  float distY = Math.abs(Math.abs(pY) - Math.abs(p[1]));
-	  if(pY < posY && distY > 0.9 && !cubes.get(currentCube).opened(4))
+	  if(pY < posY && b[1][1] > pY-m3 && !cubes.get(currentCube).opened(4)) // gor
 		  return true;
-	  else if(pY > posY  && distY > 0.9 && !cubes.get(currentCube).opened(5))
+	  else if(pY > posY  && b[0][1] < pY+m3 && !cubes.get(currentCube).opened(5)) // dol
 		  return true;
+	  //float b[][] = cubes.get(currentCube).getBounds();
+		//bl br tr tl
+		 /* float xdist = 0.6f;
+		  float zdist = 0.5f;
+		  float[][] cQuad = {{-pX-xdist/2,pZ+zdist/2}, {-pX+xdist/2,pZ+zdist/2}, {-pX+xdist,pZ+zdist}, {-pX-xdist,pZ+zdist}};
+		  for(int i=0;i<cQuad.length;i++) {
+			  cQuad[i][0] = cQuad[i][0] * cos(-(rY%90)) - cQuad[i][1] * sin(-(rY%90));
+			  cQuad[i][1] = cQuad[i][0] * sin(-(rY%90)) + cQuad[i][1] * cos(-(rY%90));
+		  }
+		  System.out.println(Arrays.deepToString(cQuad)+", x: "+pX+", z: "+pZ+",r "+rY+", c: "+currentCube);
+		  
+		  boolean res[] ={false, false, false, false};
+		  System.out.println("------------------------------------");
+		  for(int i=0;i<cQuad.length;i++) {
+			  // naprej
+			  if(cQuad[i][1] > b[1][2] && !cubes.get(currentCube).opened(2))
+				  res[0] = true;
+			  // nazaj
+			  if(cQuad[i][1] < b[0][2] && !cubes.get(currentCube).opened(0))
+				  res[1] = true;
+			  // desno
+			  if(cQuad[i][0] < b[1][0] && !cubes.get(currentCube).opened(1))
+				  res[2] = true;
+			  // levo
+			  if(cQuad[i][0] > b[0][0] && !cubes.get(currentCube).opened(3)) 
+				  res[3] = true;
+			  System.out.println(i+" "+res[0]+" "+res[1]+" "+res[2]+" "+res[3]);
+			  res[0] = false;
+			  res[1] = false;
+			  res[2] = false;
+			  res[3] = false;
+		  }
+		  for(int i=0;i<cQuad.length;i++) {
+			  if(cQuad[i][1] > b[1][2] && !cubes.get(currentCube).opened(2)) // naprej
+				  return true;
+			  if(cQuad[i][1] < b[0][2] && !cubes.get(currentCube).opened(0)) // nazaj
+				  return true;
+			  if(cQuad[i][0] < b[1][0] && !cubes.get(currentCube).opened(1)) // desno
+				  return true;
+			  if(cQuad[i][0] > b[0][0] && !cubes.get(currentCube).opened(3)) // levo 
+				  return true;
+		  }*/
 	  return false;
   }
   
@@ -658,19 +764,18 @@ public class Main extends BaseWindow {
 	  if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 		  getCurrentCube();
 		  if(rotY != 0) {
-			  float point = cos((rotX%360))*NormalSpeed;
-			  pZ=cos((rotY%360))*point;
-			  pX=sin((rotY%360))*point;
+			  pZ=cos((rotY%360))*NormalSpeed;
+			  pX=sin((rotY%360))*NormalSpeed;
 		  }  
 		  else
 			  //posZ+=NormalSpeed;
 			  pZ=NormalSpeed;
-		  if(!collision(posX - pX, posY, posZ + pZ)) {
-			  posY+=pY;
+		  if(!collision(posX - pX, posY, posZ + pZ, rotY)) {
 			  posZ+=pZ;
 			  posX-=pX;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -679,22 +784,29 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 		  getCurrentCube();
 		  if(rotY != 0) {
-			  float point = cos((rotX%360))*NormalSpeed;
-			  pZ=cos((rotY%360))*point;
-			  pX=sin((rotY%360))*point;
+			  pZ=cos((rotY%360))*NormalSpeed;
+			  pX=sin((rotY%360))*NormalSpeed;
 		  }  
 		  else
 			  pZ=NormalSpeed;
-		  if(!collision(posX + pX, posY, posZ - pZ)) {
-			  posY-=pY;
+		  if(!collision(posX + pX, posY, posZ - pZ, rotY)) {
 			  posZ-=pZ;
 			  posX+=pX;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -703,6 +815,14 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 		  getCurrentCube();
@@ -712,11 +832,12 @@ public class Main extends BaseWindow {
 		  }  
 		  else
 			  pX+=NormalSpeed;
-		  if(!collision(posX + pX, posY, posZ + pZ)) {
+		  if(!collision(posX + pX, posY, posZ + pZ, rotY)) {
 			  posZ+=pZ;
 			  posX+=pX;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -725,6 +846,14 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
 		  getCurrentCube();
@@ -734,11 +863,12 @@ public class Main extends BaseWindow {
 		  }  
 		  else
 			  pX=NormalSpeed;
-		  if(!collision(posX - pX, posY, posZ - pZ)) {
+		  if(!collision(posX - pX, posY, posZ - pZ, rotY)) {
 			  posZ-=pZ;
 			  posX-=pX;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -747,13 +877,22 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-		  rY=FastSpeed*4;
+		  rY = FastSpeed;
 		  if(!collisionRotation(rotY-rY)) {
 			  rotY-=rY;
 		  }
 
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -762,13 +901,22 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-		  rY=FastSpeed*4;
+		  rY = FastSpeed;
 		  if(!collisionRotation(rotY+rY)) {
 			  rotY+=rY;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -777,13 +925,22 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-		  pY=NormalSpeed;
-		  if(!collision(posX, posY-pY, posZ)) {
+		  pY = NormalSpeed;
+		  if(!collision(posX, posY-pY, posZ, rotY)) {
 			  posY-=pY;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -792,13 +949,22 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-		  pY=NormalSpeed;
-		  if(!collision(posX, posY+pY, posZ)) {
+		  pY = NormalSpeed; 
+		  if(!collision(posX, posY+pY, posZ, rotY)) {
 			  posY+=pY;
 		  }
 		  
+		  if(debug) {
 		  int c = getCurrentCube();
 		  float s[] = cubes.get(c).getPosition();
 		  System.out.println("-------------------------");
@@ -807,6 +973,20 @@ public class Main extends BaseWindow {
 		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
 		  System.out.println("rot: "+rotY);
 		  System.out.println("cube: "+c);
+		  float b[][] = cubes.get(c).getBounds();
+		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
+		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
+		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
+		  float h[][] = ship.getBounds();
+		  System.out.println("hx: "+h[0][0]+"  "+h[1][0]);
+		  System.out.println("hy: "+h[0][1]+"  "+h[1][1]);
+		  }
+	  }
+	  if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
+		  if(debug)
+			  debug = false;
+		  else
+			  debug = true;
 	  }
 	  if (Display.isCloseRequested()) {
 	      BaseWindow.isRunning = false;

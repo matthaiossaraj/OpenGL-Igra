@@ -8,14 +8,13 @@ public class World {
 	float size = 2f;
 	
 	public World() {
-		addCube("start","front");
+		/*addCube("start","front");
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","right");
-		  addCube("secret","left"); // SECRET chamber with SPEED diamond
 		  addCube("right","right");
 		  addCube("right","right");
 		  addCube("right","right");
@@ -24,7 +23,6 @@ public class World {
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","up");
-		  addCube("secret","front"); // SECRET chamber with TIME diamond 
 		  addCube("up","up");	  
 		  addCube("up","left");
 		  addCube("left","left");
@@ -37,7 +35,20 @@ public class World {
 		  addCube("front","front");
 		  addCube("front","front");
 		  addCube("front","front");
-		  addCube("front","front");
+		  addCube("front","front");*/
+		addCube("start","front");
+		addCube("front","front");
+		addCube("front","right");
+		addCube("right","right");
+		addCube("right","right");
+		addCube("right","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","left");
+		addCube("left","left");
+		addCube("left","left");
+		addCube("left","left");
+		addCube("left","left");
 	}
 	
 	public ArrayList getCubes() {
@@ -123,21 +134,6 @@ public class World {
 				  cubes.add(new Cube(new int[]{1,1,1,0,0,1}, new float[]{s_posX,s_posY,s_posZ}));
 			  else if(next=="down")
 				  cubes.add(new Cube(new int[]{1,1,1,1,0,0}, new float[]{s_posX,s_posY,s_posZ}));
-		  }
-		  if(direction=="secret") {
-			  if (next=="left") {
-				  s_posX-=2*size;
-				  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-				  s_posX+=2*size;
-			  } else if (next=="right") {
-				  s_posX+=2*size;
-				  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-				  s_posX-=2*size;
-			  } else if (next=="front") {
-				  s_posZ-=2*size;
-				  cubes.add(new Cube(new int[]{1,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
-				  s_posZ+=2*size;
-			  }
 		  }
 		  if(direction=="start")
 			  cubes.add(new Cube(new int[]{1,1,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
