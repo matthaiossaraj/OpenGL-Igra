@@ -30,6 +30,7 @@ public class World {
 		addCube("front","front");
 		addCube("front","front");
 		addCube("front","LR");
+		add("speed");
 		push();
 		addCube("right","front");
 		addCube("front","front");
@@ -39,7 +40,6 @@ public class World {
 		addCube("front","right");
 		addCube("right","front");
 		addCube("front","front");
-		add("speed");
 		addCube("front","left");
 		addCube("left","front");
 		addCube("front","right");

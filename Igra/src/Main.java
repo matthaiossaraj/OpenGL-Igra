@@ -176,23 +176,23 @@ public class Main extends BaseWindow {
   protected void renderHUD() {
 	//Cockpit (snapshots)
 	  GL11.glBindTexture(GL11.GL_TEXTURE_2D, Main.m_Textures.get(4)); // "fuselage64.png"
-	  GL11.glBegin(GL11.GL_QUADS);
-	  GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE, Main.allocFloats(new float[] { 1.0f, 1.0f, 0.5f, 0.8f}));
-	  //GL11.glTranslatef(0, 0, -2.0f);
-	  GL11.glTexCoord2f(-1.0f, 1.0f); GL11.glVertex3f(-0.008f,  0.035f, -0.3f);
-	  GL11.glTexCoord2f( 0.0f, 1.0f); GL11.glVertex3f( 0.008f,  0.035f, -0.3f);
-	  GL11.glTexCoord2f( 0.0f, 0.0f); GL11.glVertex3f( 0.008f,  0.051f, -0.3f);
-  	  GL11.glTexCoord2f(-1.0f, 0.0f); GL11.glVertex3f(-0.008f,  0.051f, -0.3f);
-	  GL11.glEnd();
-  	  GL11.glBindTexture(GL11.GL_TEXTURE_2D, Main.m_Textures.get(5)); // "fuselage256.png"
-	  GL11.glBegin(GL11.GL_QUADS);
-	  GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE, Main.allocFloats(new float[] { 1.0f, 1.0f, 0.5f, 0.8f}));
-	  //GL11.glTranslatef(0, 0, -2.0f);
-	  GL11.glTexCoord2f(-1.0f, 1.0f); GL11.glVertex3f(-0.04f, -0.102f, -0.3f);
-	  GL11.glTexCoord2f( 0.0f, 1.0f); GL11.glVertex3f( 0.04f, -0.102f, -0.3f);
-	  GL11.glTexCoord2f( 0.0f, 0.0f); GL11.glVertex3f( 0.04f, -0.058f, -0.3f);
-  	  GL11.glTexCoord2f(-1.0f, 0.0f); GL11.glVertex3f(-0.04f, -0.058f, -0.3f);
-	  GL11.glEnd();
+	   GL11.glBegin(GL11.GL_QUADS);
+	   GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE, Main.allocFloats(new float[] { 1.0f, 1.0f, 0.5f, 0.8f}));
+	   //GL11.glTranslatef(0, 0, -2.0f);
+	   GL11.glTexCoord2f(-1.0f, 1.0f); GL11.glVertex3f(-0.08f,  0.5f, 1.0f);
+	   GL11.glTexCoord2f( 0.0f, 1.0f); GL11.glVertex3f( 0.08f,  0.5f, 1.0f);
+	   GL11.glTexCoord2f( 0.0f, 0.0f); GL11.glVertex3f( 0.08f,  0.66f, 1.0f);
+	     GL11.glTexCoord2f(-1.0f, 0.0f); GL11.glVertex3f(-0.08f,  0.66f, 1.0f);
+	   GL11.glEnd();
+	   GL11.glBindTexture(GL11.GL_TEXTURE_2D, Main.m_Textures.get(5)); // "fuselage256.png"
+	   GL11.glBegin(GL11.GL_QUADS);
+	   GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE, Main.allocFloats(new float[] { 1.0f, 1.0f, 0.5f, 0.8f}));
+	   //GL11.glTranslatef(0, 0, -2.0f);
+	   GL11.glTexCoord2f(-1.0f, 1.0f); GL11.glVertex3f(-0.34f, -0.66f, 1.0f);
+	   GL11.glTexCoord2f( 0.0f, 1.0f); GL11.glVertex3f( 0.34f, -0.66f, 1.0f);
+	   GL11.glTexCoord2f( 0.0f, 0.0f); GL11.glVertex3f( 0.34f, -0.28f, 1.0f);
+	     GL11.glTexCoord2f(-1.0f, 0.0f); GL11.glVertex3f(-0.34f, -0.28f, 1.0f);
+	   GL11.glEnd();
 	
 	// HUD & Text render
 	  startHUD();
@@ -296,7 +296,7 @@ public class Main extends BaseWindow {
 	  } else {
 		  GL11.glColor4f(0, 0, 1, 1f);
 	  }
-	  text.renderString("FUEL ("+health+")", 17);
+      text.renderString("FUEL ("+health+")%", 18);
 	  
 	  GL11.glPopMatrix();
 	  GL11.glPushMatrix();
@@ -417,7 +417,7 @@ public class Main extends BaseWindow {
 		  if(Mouse.isButtonDown(0)){
 			  Mouse.setCursorPosition(-1, -1);
 			  Display.update();
-			  gameplay = 0;
+			  gameplay = 1;
 		  }
 	  }
 	  if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
@@ -431,7 +431,7 @@ public class Main extends BaseWindow {
 		  if(Mouse.isButtonDown(0)){
 			  Mouse.setCursorPosition(-1, -1);
 			  Display.update();
-			  gameplay = 0;
+			  gameplay = 1;
 		  }
 	  }
 	  if (Display.isCloseRequested() || Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
