@@ -22,7 +22,7 @@ public class Main extends BaseWindow {
   public static int gameplay = 1;
   int health = 100;
   public static Timer timer;
-  static int definedPlayTime = 30;
+  static int definedPlayTime = 1000;
   public static int playTime = definedPlayTime, healthTime = 10, firstTime = 1000, period = 1000;
   public static int totalTime = playTime+healthTime; 
 
@@ -76,10 +76,10 @@ public class Main extends BaseWindow {
     
 	  // fog
 	  if (flag_fog) {
-	      GL11.glEnable(GL11.GL_FOG);
-	      GL11.glFog(GL11.GL_FOG_COLOR,allocFloats(new float[] { 0.5f,0.5f,0.5f,0.0f }));
+		  GL11.glEnable(GL11.GL_FOG);
+	      GL11.glFog(GL11.GL_FOG_COLOR,allocFloats(new float[] { 0.3f,0.3f,0.3f,0.0f }));
 	      GL11.glFogi(GL11.GL_FOG_MODE,GL11.GL_EXP);
-	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.05f);
+	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.1f);
 	  }
  
 	  // mapping from normalized to window coordinates
@@ -150,7 +150,7 @@ public class Main extends BaseWindow {
 	  // enable depth buffer (off by default)
 	  GL11.glEnable(GL11.GL_DEPTH_TEST); 
 	  // enable culling of back sides of polygons
-	  //GL11.glEnable(GL11.GL_CULL_FACE);
+	  GL11.glEnable(GL11.GL_CULL_FACE);
 	  
 	  for(int i=0;i<cubes.size();i++) {
 		  Cube cube = cubes.get(i);
@@ -680,20 +680,15 @@ protected void startHUD() {
 	  for(int i=0;i<cubes.size();i++) {
 		  float b[][] = cubes.get(i).getBounds();
 		  
-		  //System.out.println(i+" -------------------------");
-		  //System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  if(b[0][0] > posX && posX > b[1][0])
+		  if(b[0][0] > posX && posX > b[1][0]) // left right
 			  detect[0] = true;
-		  //System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  if(b[0][1] > posY && posY > b[1][1])
+		  if(b[0][1] > posY && posY > b[1][1]) // down up
 			  detect[1] = true;
-		  //System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
-		  if(b[0][2] < posZ && posZ < b[1][2])
+		  if(b[0][2] < posZ && posZ < b[1][2]) // back front
 			  detect[2] = true;
-		  //System.out.println("detect: "+detect[0]+"  "+detect[1]+"  "+detect[2]);
 		  
 		  if(detect[0] && detect[1] && detect[2])
-			  currentCube = i ;
+			  currentCube = i;
 		  detect[0] = false;
 		  detect[1] = false;
 		  detect[2] = false;
@@ -701,24 +696,145 @@ protected void startHUD() {
 	  return currentCube;
   }
   
+  protected int getCubeZ() {
+	  int cube = currentCube;
+	  boolean[] detect = {false, false, false};
+	  for(int i=0;i<cubes.size();i++) {
+		  float b[][] = cubes.get(i).getBounds();
+		  
+		  if(b[0][0] > posX && posX > b[1][0]) // left right
+			  detect[0] = true;
+		  if(b[0][1] > posY && posY > b[1][1]) // down up
+			  detect[1] = true;
+		  if(b[0][2] < posZ+1.7 && posZ+1.7 < b[1][2]) // back front
+			  detect[2] = true;
+		  
+		  if(detect[0] && detect[1] && detect[2])
+			  cube = i;
+		  detect[0] = false;
+		  detect[1] = false;
+		  detect[2] = false;
+	  }
+	  return cube;
+  }
+  protected int getCubeX() {
+	  int cube = currentCube;
+	  boolean[] detect = {false, false, false};
+	  for(int i=0;i<cubes.size();i++) {
+		  float b[][] = cubes.get(i).getBounds();
+		  
+		  if(b[0][0] > posX+1.5 && posX-1.5 > b[1][0]) // left right
+			  detect[0] = true;
+		  if(b[0][1] > posY && posY > b[1][1]) // down up
+			  detect[1] = true;
+		  if(b[0][2] < posZ && posZ < b[1][2]) // back front
+			  detect[2] = true;
+		  
+		  if(detect[0] && detect[1] && detect[2])
+			  cube = i;
+		  detect[0] = false;
+		  detect[1] = false;
+		  detect[2] = false;
+	  }
+	  return cube;
+  }
+  protected int getCubeY() {
+	  int cube = currentCube;
+	  boolean[] detect = {false, false, false};
+	  for(int i=0;i<cubes.size();i++) {
+		  float b[][] = cubes.get(i).getBounds();
+		  
+		  if(b[0][0] > posX && posX > b[1][0]) // left right
+			  detect[0] = true;
+		  if(b[0][1] > posY+1.5 && posY-1.5 > b[1][1]) // down up
+			  detect[1] = true;
+		  if(b[0][2] < posZ && posZ < b[1][2]) // back front
+			  detect[2] = true;
+		  
+		  if(detect[0] && detect[1] && detect[2])
+			  cube = i;
+		  detect[0] = false;
+		  detect[1] = false;
+		  detect[2] = false;
+	  }
+	  return cube;
+  }
+  
   protected boolean collision(float pX, float pY, float pZ) {
 	  float b[][] = cubes.get(currentCube).getBounds();
-	  
 	  float m = 1.7f;
 	  float m2 = 1.5f;
 	  float m3 = 1.0f;
-	  if(pZ > posZ && b[1][2] < pZ+m && !cubes.get(currentCube).opened(2)) // naprej
+	  if(pZ >= posZ && b[1][2] < pZ+m && !cubes.get(currentCube).opened(2)) // naprej
 		  return true;
-	  else if(pZ < posZ  && b[0][2] > pZ-m && !cubes.get(currentCube).opened(0)) // nazaj
+	  if(pZ <= posZ  && b[0][2] > pZ-m && !cubes.get(currentCube).opened(0)) // nazaj
 		  return true;
-	  if(pX < posX && b[1][0] > pX-m2 && !cubes.get(currentCube).opened(1)) // desno
+	  if(pX <= posX && b[1][0] > pX-m2 && !cubes.get(currentCube).opened(1)) // desno
 		  return true;
-	  else if(pX > posX  && b[0][0] < pX+m2 && !cubes.get(currentCube).opened(3)) // levo 
+	  if(pX >= posX  && b[0][0] < pX+m2 && !cubes.get(currentCube).opened(3)) // levo 
 		  return true;
-	  if(pY < posY && b[1][1] > pY-m3 && !cubes.get(currentCube).opened(4)) // gor
+	  if(pY <= posY && b[1][1] > pY-m3 && !cubes.get(currentCube).opened(4)) // gor
 		  return true;
-	  else if(pY > posY  && b[0][1] < pY+m3 && !cubes.get(currentCube).opened(5)) // dol
+	  if(pY >= posY  && b[0][1] < pY+m3 && !cubes.get(currentCube).opened(5)) // dol
 		  return true;
+	  
+	  // testiraj ali pride do trka če bi drugače določili trenutno kocko
+	  int cube = currentCube; 
+	  
+	  cube = getCubeZ();
+	  float s[][] = cubes.get(cube).getBounds();
+	  float s_m = 1.7f;
+	  float s_m2 = 1.5f;
+	  float s_m3 = 1.0f;
+	  if(pZ >= posZ && s[1][2] < pZ+s_m && !cubes.get(cube).opened(2)) // naprej
+		  return true;
+	  if(pZ <= posZ  && s[0][2] > pZ-s_m && !cubes.get(cube).opened(0)) // nazaj
+		  return true;
+	  if(pX <= posX && s[1][0] > pX-s_m2 && !cubes.get(cube).opened(1)) // desno
+		  return true;
+	  if(pX >= posX  && s[0][0] < pX+s_m2 && !cubes.get(cube).opened(3)) // levo 
+		  return true;
+	  if(pY <= posY && s[1][1] > pY-s_m3 && !cubes.get(cube).opened(4)) // gor
+		  return true;
+	  if(pY >= posY  && s[0][1] < pY+s_m3 && !cubes.get(cube).opened(5)) // dol
+		  return true;
+	  
+	  cube = getCubeX();
+	  s = cubes.get(cube).getBounds();
+	  s_m = 1.7f;
+	  s_m2 = 1.5f;
+	  s_m3 = 1.0f;
+	  if(pZ >= posZ && s[1][2] < pZ+s_m && !cubes.get(cube).opened(2)) // naprej
+		  return true;
+	  if(pZ <= posZ  && s[0][2] > pZ-s_m && !cubes.get(cube).opened(0)) // nazaj
+		  return true;
+	  if(pX <= posX && s[1][0] > pX-s_m2 && !cubes.get(cube).opened(1)) // desno
+		  return true;
+	  if(pX >= posX  && s[0][0] < pX+s_m2 && !cubes.get(cube).opened(3)) // levo 
+		  return true;
+	  if(pY <= posY && s[1][1] > pY-s_m3 && !cubes.get(cube).opened(4)) // gor
+		  return true;
+	  if(pY >= posY  && s[0][1] < pY+s_m3 && !cubes.get(cube).opened(5)) // dol
+		  return true;
+	  
+	  cube = getCubeY();
+	  s = cubes.get(cube).getBounds();
+	  s_m = 1.7f;
+	  s_m2 = 1.5f;
+	  s_m3 = 1.0f;
+	  if(pZ >= posZ && s[1][2] < pZ+s_m && !cubes.get(cube).opened(2)) // naprej
+		  return true;
+	  if(pZ <= posZ  && s[0][2] > pZ-s_m && !cubes.get(cube).opened(0)) // nazaj
+		  return true;
+	  if(pX <= posX && s[1][0] > pX-s_m2 && !cubes.get(cube).opened(1)) // desno
+		  return true;
+	  if(pX >= posX  && s[0][0] < pX+s_m2 && !cubes.get(cube).opened(3)) // levo 
+		  return true;
+	  if(pY <= posY && s[1][1] > pY-s_m3 && !cubes.get(cube).opened(4)) // gor
+		  return true;
+	  if(pY >= posY  && s[0][1] < pY+s_m3 && !cubes.get(cube).opened(5)) // dol
+		  return true;
+	  
 	  return false;
   }
   
@@ -742,21 +858,6 @@ protected void startHUD() {
 			  posZ+=pZ;
 			  posX-=pX;
 		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+(posX-pX)+"  "+(posY+pY)+"  "+(posZ+pZ));
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
-		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 		  getCurrentCube();
@@ -769,21 +870,6 @@ protected void startHUD() {
 		  if(!collision(posX + pX, posY, posZ - pZ)) {
 			  posZ-=pZ;
 			  posX+=pX;
-		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+(posX+pX)+"  "+(posY-pY)+"  "+(posZ-pZ));
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
 		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
@@ -798,21 +884,6 @@ protected void startHUD() {
 			  posZ+=pZ;
 			  posX+=pX;
 		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+(posX+pX)+"  "+posY+"  "+(posZ+pZ));
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
-		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
 		  getCurrentCube();
@@ -826,62 +897,17 @@ protected void startHUD() {
 			  posZ-=pZ;
 			  posX-=pX;
 		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+(posX-pX)+"  "+posY+"  "+(posZ-pZ));
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
-		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 		  pY = NormalSpeed;
 		  if(!collision(posX, posY-pY, posZ)) {
 			  posY-=pY;
 		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+posX+"  "+(posY-pY)+"  "+posZ);
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
-		  }
 	  }
 	  if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 		  pY = NormalSpeed; 
 		  if(!collision(posX, posY+pY, posZ)) {
 			  posY+=pY;
-		  }
-		  
-		  if(debug) {
-		  int c = getCurrentCube();
-		  float s[] = cubes.get(c).getPosition();
-		  System.out.println("-------------------------");
-		  System.out.println("pos: "+posX+"  "+posY+"  "+posZ);
-		  System.out.println("new: "+posX+"  "+(posY+pY)+"  "+posZ);
-		  System.out.println("pC: "+s[0]+"  "+s[1]+"  "+s[2]);
-		  System.out.println("rot: "+rotY);
-		  System.out.println("cube: "+c);
-		  float b[][] = cubes.get(c).getBounds();
-		  System.out.println("bx: "+b[0][0]+"  "+b[1][0]);
-		  System.out.println("by: "+b[0][1]+"  "+b[1][1]);
-		  System.out.println("bz: "+b[0][2]+"  "+b[1][2]);
 		  }
 	  }
 	  if (Display.isCloseRequested()) {

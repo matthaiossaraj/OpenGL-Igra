@@ -19,16 +19,16 @@ public class Cube extends Model3D {
 		float bounds[][] = new float[2][3];
 		
 		// x
-		bounds[0][0] = -this.translation[0] + size;
-		bounds[1][0] = -this.translation[0] - size;
+		bounds[0][0] = -this.translation[0] + size; // left
+		bounds[1][0] = -this.translation[0] - size; // right
 		
 		// y
-		bounds[0][1] = -this.translation[1] + size;
-		bounds[1][1] = -this.translation[1] - size;
+		bounds[0][1] = -this.translation[1] + size; // down
+		bounds[1][1] = -this.translation[1] - size; // up
 				
 		// z
-		bounds[0][2] = -this.translation[2];
-		bounds[1][2] = -this.translation[2] + 2*size;
+		bounds[0][2] = -this.translation[2]; // back
+		bounds[1][2] = -this.translation[2] + 2*size; // front
 		
 		return bounds;
 	}
