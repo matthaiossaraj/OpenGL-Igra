@@ -1,58 +1,110 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 
 public class World {
 	
 	private float s_posX = 0, s_posY = 0, s_posZ = 0;
-	public static ArrayList<Cube> cubes = new ArrayList();
+	private Stack stack = new Stack();
+	private ArrayList<Cube> cubes = new ArrayList();
 	float size = 2f;
+	Diamonds diamonds;
 	
-	public World() {
-		/*addCube("start","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","right");
-		  addCube("right","right");
-		  addCube("right","right");
-		  addCube("right","right");
-		  addCube("right","right");
-		  addCube("right","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","up");
-		  addCube("up","up");	  
-		  addCube("up","left");
-		  addCube("left","left");
-		  addCube("left","left");
-		  addCube("left","left");
-		  addCube("left","left");
-		  addCube("left","left");
-		  addCube("left","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");
-		  addCube("front","front");*/
+	public World(Diamonds diamonds) {
+		// bad, speed, time, good, final
+		this.diamonds = diamonds;
+		
 		addCube("start","front");
 		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
 		addCube("front","right");
-		addCube("right","right");
-		addCube("right","right");
+		add("bad");
 		addCube("right","front");
 		addCube("front","front");
 		addCube("front","front");
 		addCube("front","left");
-		addCube("left","left");
-		addCube("left","left");
-		addCube("left","left");
-		addCube("left","left");
+		addCube("left","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","LR");
+		push();
+		addCube("right","front");
+		addCube("front","front");
+		add("bad");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","right");
+		addCube("right","front");
+		addCube("front","front");
+		add("speed");
+		addCube("front","left");
+		addCube("left","front");
+		addCube("front","right");
+		addCube("right","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","END");
+		pop();
+		addCube("left","front");
+		addCube("front","front");
+		addCube("front","left");
+		addCube("left","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","UD");
+		push();
+		addCube("down","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","left");
+		addCube("left","front");
+		addCube("front","right");
+		addCube("right","front");
+		addCube("front","up");
+		addCube("up","front");
+		addCube("front","front");
+		addCube("front","down");
+		addCube("down","front");
+		add("good");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		add("final");
+		pop();
+		addCube("up","front");
+		addCube("front","right");
+		add("time");
+		addCube("right","front");
+		addCube("front","right");
+		addCube("right","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","front");
+		addCube("front","END");
 	}
 	
 	public ArrayList getCubes() {
 		return cubes;
+	}
+	
+	private void push() {
+		float split[] = {s_posX, s_posY, s_posZ};
+		stack.push(split);
+	}
+	
+	private void pop() {
+		float split[] = (float[])stack.pop();
+		s_posX = split[0]; 
+		s_posY = split[1];
+		s_posZ = split[2];
 	}
 	
 	private void addCube(String direction, String next) {
@@ -69,6 +121,12 @@ public class World {
 				  cubes.add(new Cube(new int[]{0,1,1,1,0,1}, new float[]{s_posX,s_posY,s_posZ}));
 			  else if(next=="down")
 				  cubes.add(new Cube(new int[]{0,1,1,1,1,0}, new float[]{s_posX,s_posY,s_posZ}));
+			  else if(next=="LR")
+				  cubes.add(new Cube(new int[]{0,0,1,0,1,1}, new float[]{s_posX,s_posY,s_posZ}));
+			  else if(next=="UD")
+				  cubes.add(new Cube(new int[]{0,1,1,1,0,0}, new float[]{s_posX,s_posY,s_posZ}));
+			  else if(next=="END")
+				  cubes.add(new Cube(new int[]{0,1,1,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
 		  }
 	  	  if(direction=="back") {
 	  		  s_posZ+=2*size;
@@ -138,5 +196,11 @@ public class World {
 		  if(direction=="start")
 			  cubes.add(new Cube(new int[]{1,1,0,1,1,1}, new float[]{s_posX,s_posY,s_posZ}));
 	  }
+	
+	private void add(String type) {
+		// bad, speed, time, good, final
+		float v[] = {s_posX, s_posY, s_posZ};
+		diamonds.addDiamond(v, type);
+	}
 
 }
