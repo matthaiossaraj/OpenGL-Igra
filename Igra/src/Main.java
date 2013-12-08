@@ -22,7 +22,7 @@ public class Main extends BaseWindow {
   public static int gameplay = 1;
   int health = 100;
   public static Timer timer;
-  static int definedPlayTime = 20;
+  static int definedPlayTime = 25;
   public static int playTime = definedPlayTime, healthTime = 10, firstTime = 1000, period = 1000;
   public static int totalTime = playTime+healthTime; 
 
@@ -107,7 +107,7 @@ public class Main extends BaseWindow {
   protected void initializeModels() {
 	  gameplay = 1;
 	  health = 100;
-	  NormalSpeed = 0.03f;
+	  NormalSpeed = 0.02f;
 	  playTime = definedPlayTime;
 	  healthTime = 10;
 	  totalTime = playTime+healthTime;
