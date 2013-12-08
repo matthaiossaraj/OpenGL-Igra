@@ -22,7 +22,7 @@ public class Main extends BaseWindow {
   public static int gameplay = 1;
   int health = 100;
   public static Timer timer;
-  static int definedPlayTime = 1000;
+  static int definedPlayTime = 20;
   public static int playTime = definedPlayTime, healthTime = 10, firstTime = 1000, period = 1000;
   public static int totalTime = playTime+healthTime; 
 
@@ -723,7 +723,7 @@ protected void startHUD() {
 	  for(int i=0;i<cubes.size();i++) {
 		  float b[][] = cubes.get(i).getBounds();
 		  
-		  if(b[0][0] > posX+1.5 && posX-1.5 > b[1][0]) // left right
+		  if(b[0][0] > posX+1 && posX-1 > b[1][0]) // left right
 			  detect[0] = true;
 		  if(b[0][1] > posY && posY > b[1][1]) // down up
 			  detect[1] = true;
@@ -746,7 +746,7 @@ protected void startHUD() {
 		  
 		  if(b[0][0] > posX && posX > b[1][0]) // left right
 			  detect[0] = true;
-		  if(b[0][1] > posY+1.5 && posY-1.5 > b[1][1]) // down up
+		  if(b[0][1] > posY+1.2 && posY-1.2 > b[1][1]) // down up
 			  detect[1] = true;
 		  if(b[0][2] < posZ && posZ < b[1][2]) // back front
 			  detect[2] = true;
