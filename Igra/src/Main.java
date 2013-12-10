@@ -22,7 +22,7 @@ public class Main extends BaseWindow {
   public static int gameplay = 1;
   int health = 100;
   public static Timer timer;
-  static int definedPlayTime = 25;
+  static int definedPlayTime = 50;
   public static int playTime = definedPlayTime, healthTime = 10, firstTime = 1000, period = 1000;
   public static int totalTime = playTime+healthTime; 
 
@@ -34,7 +34,7 @@ public class Main extends BaseWindow {
   float NormalSpeed;
   int currentCube;
   float size=2f;
-  boolean debug = true;
+  boolean collision = true;
   
   // for all additional objects (Elements=Osebki/Predmeti; for instance "Diamonds")
   ArrayList<Diamond> diamonds;
@@ -79,7 +79,7 @@ public class Main extends BaseWindow {
 		  GL11.glEnable(GL11.GL_FOG);
 	      GL11.glFog(GL11.GL_FOG_COLOR,allocFloats(new float[] { 0.3f,0.3f,0.3f,0.0f }));
 	      GL11.glFogi(GL11.GL_FOG_MODE,GL11.GL_EXP);
-	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.1f);
+	      GL11.glFogf(GL11.GL_FOG_DENSITY,0.09f);
 	  }
  
 	  // mapping from normalized to window coordinates
@@ -761,6 +761,8 @@ protected void startHUD() {
   }
   
   protected boolean collision(float pX, float pY, float pZ) {
+	  if(!collision) // če je collision izklopljen
+		  return false;
 	  float b[][] = cubes.get(currentCube).getBounds();
 	  float m = 1.7f;
 	  float m2 = 1.5f;
